@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <random>
 using namespace std;
 
 void main_menu(Player& player, map<string, Item> items){
@@ -29,12 +30,13 @@ void main_menu(Player& player, map<string, Item> items){
 }
 
 
-void all_items(map<string, Item> items){
-    cout << "Inventaire du joueur :" << endl;
-}
-
-void start_match(Player& player, Monster& monster){
+void match_menu(){
     cout << "Combat en cours..." << endl;
+    cout << endl;
+    cout << "1. Fight" << endl;
+    cout << "2. Act" << endl;
+    cout << "3. Item" << endl;
+    cout << "4. Mercy" << endl;
     cout << endl;
 }
 
@@ -91,9 +93,9 @@ void write_csv(string file, vector<vector<string>> data){
     }
 }
 
-map<string, Monster> load_monsters(string file, map<string, Action> actions){
+map<string, Monster*> load_monsters(string file, map<string, Action> actions){
     vector<vector<string>> monsters_data = load_csv(file);
-    map<string, Monster> monsters_map;
+    map<string, Monster*> monsters_map;
     for (int i = 0; i < monsters_data.size(); i++) {
         string type = monsters_data[i][0];
         string name = monsters_data[i][1];
@@ -106,13 +108,13 @@ map<string, Monster> load_monsters(string file, map<string, Action> actions){
         Action act3 = actions[monsters_data[i][8]];
         Action act4 = actions[monsters_data[i][9]];
         if (type == "NORMAL"){
-            monsters_map[name] = Monster(name, hp, attack, defense, mercy_goal, act1, act2);
+            monsters_map[name] = new Monster(name, hp, attack, defense, mercy_goal, act1, act2);
         }
         else if (type == "MINIBOSS"){
-            monsters_map[name] = Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3);
+            monsters_map[name] = new Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3);
         }
         else if (type == "BOSS"){
-            monsters_map[name] = Boss(name, hp, attack, defense, mercy_goal, act1, act2, act4);
+            monsters_map[name] = new Boss(name, hp, attack, defense, mercy_goal, act1, act2, act4);
         }
     }
     return monsters_map;
@@ -143,10 +145,28 @@ map<string, Action> load_actions(vector<vector<string>> actions_data){
 }
 
 void go_back(){
-    cout << "N'importe quelle touche + ENTREE pour retourner au menu" << endl;
+    cout << "N'importe quelle touche + ENTREE pour retourner" << endl;
     string back;
     getline(cin, back);
+    clear();
 }
 
+int random_damages(int max) {
+    int min = 0;
+    static random_device rd;
+    static mt19937 gen(rd());
+    
+    uniform_int_distribution<int> distrib(min, max);
+    return distrib(gen);
+}
+
+void fight(Player& player, Monster* monster, int damages, string tour){
+    if (tour == "player"){
+        monster->set_current_hp(monster->get_current_hp() - damages);
+    }
+    else if (tour == "monster"){
+        player.set_current_hp(player.get_current_hp() - damages);
+    }
+}
 
 #endif
