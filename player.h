@@ -105,15 +105,6 @@ class Player{
             }
         }
 
-        // void fight(Monster*& monster, int damages){
-        //     int monster_current_hp = monster->get_current_hp();
-        //     monster->set_current_hp(monster_current_hp - damages);
-        // }
-
-        // void be_fought(int damages){
-        //     this->set_current_hp(this->get_current_hp() - damages);
-        // }
-
 };
 
 #endif

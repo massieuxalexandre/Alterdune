@@ -19,7 +19,7 @@ class Monster{
         Action act2;
 
     public:
-        Monster(){};
+        Monster() {};
         Monster(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2){
             this->name = name;
             this->current_hp = hp;
@@ -52,14 +52,9 @@ class Monster{
             return this->current_hp > 0;
         }
 
-        // void fight(Player& player, int damages){
-        //     int player_current_hp = player.get_current_hp();
-        //     player.set_current_hp(player_current_hp - damages);
-        // }
-
-        void print_acts(){
-            cout << act1.id << endl;
-            cout << act2.id << endl;
+        virtual void print_acts(){
+            cout << "1. " << act1.id << endl;
+            cout << "2. " << act2.id << endl;
         }
 
 };
@@ -73,9 +68,9 @@ class Miniboss : public Monster{
             this->act3 = act3;
         }
 
-        void print_acts(){
+        virtual void print_acts(){
             Monster::print_acts();
-            cout << act3.id << endl;
+            cout << "3. " << act3.id << endl;
         }
 
 };
@@ -85,14 +80,14 @@ class Boss : public Miniboss{
         Action act4;
 
     public:
-        Boss(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2, Action act4) : Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3){
+        Boss(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2, Action act3, Action act4) : Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3){
 
             this->act4 = act4;
         }
 
-        void print_acts(){
+        virtual void print_acts(){
             Miniboss::print_acts();
-            cout << act4.id << endl;
+            cout << "4. " << act4.id << endl;
         }
 
 

@@ -22,6 +22,7 @@ void main_menu(Player& player, map<string, Item> items){
     }
     cout << endl;
     cout << "Menu principal :" << endl;
+    cout << endl;
     cout << "1. Bestiaire" << endl;
     cout << "2. Demarrer un combat" << endl;
     cout << "3. Statistiques du joueur" << endl;
@@ -30,21 +31,13 @@ void main_menu(Player& player, map<string, Item> items){
 }
 
 
-void match_menu(){
-    cout << "Combat en cours..." << endl;
+void match_menu(string monster_name){
+    cout << "A votre tour de jouer. Choisissez ce que vous voulez faire : " << endl;
     cout << endl;
-    cout << "1. Fight" << endl;
-    cout << "2. Act" << endl;
-    cout << "3. Item" << endl;
-    cout << "4. Mercy" << endl;
-    cout << endl;
-}
-
-void fight_menu(){
-    cout << "1. Fight" << endl;
-    cout << "2. Act" << endl;
-    cout << "3. Item" << endl;
-    cout << "4. Mercy" << endl;
+    cout << "1. Combattre" << endl;
+    cout << "2. Action" << endl;
+    cout << "3. Soin" << endl;
+    cout << "4. Epargner le monstre" << endl;
     cout << endl;
 }
 
@@ -114,7 +107,7 @@ map<string, Monster*> load_monsters(string file, map<string, Action> actions){
             monsters_map[name] = new Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3);
         }
         else if (type == "BOSS"){
-            monsters_map[name] = new Boss(name, hp, attack, defense, mercy_goal, act1, act2, act4);
+            monsters_map[name] = new Boss(name, hp, attack, defense, mercy_goal, act1, act2, act3, act4);
         }
     }
     return monsters_map;
@@ -145,7 +138,14 @@ map<string, Action> load_actions(vector<vector<string>> actions_data){
 }
 
 void go_back(){
-    cout << "N'importe quelle touche + ENTREE pour retourner" << endl;
+    cout << "Appuyez sur 'ENTREE' pour retourner" << endl;
+    string back;
+    getline(cin, back);
+    clear();
+}
+
+void next_tour(){
+    cout << "Appuyez sur 'ENTREE' pour continuer" << endl;
     string back;
     getline(cin, back);
     clear();
@@ -163,10 +163,24 @@ int random_damages(int max) {
 void fight(Player& player, Monster* monster, int damages, string tour){
     if (tour == "player"){
         monster->set_current_hp(monster->get_current_hp() - damages);
+        cout << "Attaque de " << player.get_name() << " envers " << monster->get_name() << endl;
+        cout << "Degats emis : " << damages << endl;
+        if (monster->is_alive()){
+            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
+        }
+        else {
+            cout << "Vous avez tue " << monster->get_name() << endl;
+        }
     }
     else if (tour == "monster"){
         player.set_current_hp(player.get_current_hp() - damages);
+        cout << monster->get_name() << " vous a attaque !!" << endl;
+        cout << "degats pris : " << damages << endl;
+        if (player.is_alive()){
+            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_current_hp() << endl;
+        }
     }
+    cout << endl;
 }
 
 #endif
