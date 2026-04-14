@@ -11,13 +11,12 @@
 #include <random>
 using namespace std;
 
-void main_menu(Player& player, map<string, Item> items){
+void main_menu(Player& player){
     cout << "Bonjour " << player.get_name() << " ! " << endl;
     cout << endl;
     player.stats();
-    cout << endl;
     cout << "Items disponibles :" << endl;
-    for (auto& [nom, item] : items) {
+    for (auto& [nom, item] : player.get_items()) {
         cout << item.name << " (" << item.type << ") - " << item.quantity << " unites" << endl;
     }
     cout << endl;
@@ -28,6 +27,7 @@ void main_menu(Player& player, map<string, Item> items){
     cout << "3. Statistiques du joueur" << endl;
     cout << "4. Items" << endl;
     cout << "5. Quitter" << endl;
+    cout << endl;
 }
 
 
@@ -137,12 +137,6 @@ map<string, Action> load_actions(vector<vector<string>> actions_data){
     return actions_map;
 }
 
-void go_back(){
-    cout << "Appuyez sur 'ENTREE' pour retourner" << endl;
-    string back;
-    getline(cin, back);
-    clear();
-}
 
 void next_tour(){
     cout << "Appuyez sur 'ENTREE' pour continuer" << endl;
@@ -169,18 +163,22 @@ void fight(Player& player, Monster* monster, int damages, string tour){
             cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
         }
         else {
-            cout << "Vous avez tue " << monster->get_name() << endl;
+            cout << "Vous avez tue " << monster->get_name() << " !" << endl;
         }
     }
     else if (tour == "monster"){
         player.set_current_hp(player.get_current_hp() - damages);
         cout << monster->get_name() << " vous a attaque !!" << endl;
-        cout << "degats pris : " << damages << endl;
+        cout << "Degats encaisses : " << damages << endl;
         if (player.is_alive()){
-            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_current_hp() << endl;
+            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
+        }
+        else{
+            cout << "Vous avez ete tue..." << endl;
         }
     }
     cout << endl;
 }
+
 
 #endif

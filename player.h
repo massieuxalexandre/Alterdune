@@ -44,10 +44,11 @@ class Player{
         }
 
         void print_items(){
-            cout << "Items disponibles :" << endl;
-            for (auto& [name, item] : this->items) {
-            cout << item.name << " (" << item.type << ", +" << item.value << " HP) - " << item.quantity << " unites" << endl;
-    }
+            cout << "Copiez le numéro de l'item que vous souhaitez utiliser : " << endl;
+            cout << endl;
+            for (const auto& [name, item] : this->items) {
+                cout << name << ". " << item.name << " (" << item.type << ") - " << item.quantity << " unites" << endl;
+            }
         }
 
         string get_name(){
@@ -91,11 +92,20 @@ class Player{
             this->wins = wins;
         }
 
-        void set_items(string name){
+        void cap_hp(){
+            if (this->current_hp > this->max_hp){
+                this->current_hp = this->max_hp;
+            }
+            else if (this->current_hp < 0){
+                this->current_hp = 0;
+            }
+        }
+
+        void use_item(string choice){
             if (this->current_hp < this->max_hp){
-                this->items[name].quantity--;
-                this->current_hp += this->items[name].value;
-                cout << "Utilisation de " << name << "..." << endl;
+                this->items[choice].quantity--;
+                this->current_hp += this->items[choice].value;
+                cout << "Utilisation de " << this->items[choice].name << "..." << endl;
                 cout << "HP : " << this->current_hp << "/" << this->max_hp << endl;
                 cout << endl;
             }
@@ -103,6 +113,7 @@ class Player{
                 cout << "Vous ne pouvez pas consommer cette potion : vous avez deja " << this->current_hp << " HP" << endl;
                 cout << endl;
             }
+            cap_hp();
         }
 
 };
