@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
 using namespace std;
 
 
@@ -15,11 +16,11 @@ class Player{
         int kills;
         int spared;
         int wins;
-        map<string, Item> items;
+        vector<Item> items;
 
     public:
         Player(){};
-        Player(string name, map<string, Item> items){
+        Player(string name, vector<Item> items){
             this->name = name;
             this->max_hp = 100;
             this->current_hp = 100;
@@ -34,21 +35,41 @@ class Player{
             cout << "Nom : " << this->name << endl;
             cout << "HP : " << this->current_hp << "/" << this->max_hp << endl;
             cout << "Kills : " << this->kills << endl;
-            cout << "Epargnes : " << this->spared << endl;
+            cout << "Monstres épargnés : " << this->spared << endl;
             cout << "Victoires : " << this->wins << endl;
             cout << endl;
         }
 
-        map<string, Item> get_items(){
+        vector<Item> get_items(){
             return this->items;
         }
 
         void print_items(){
-            cout << "Copiez le numéro de l'item que vous souhaitez utiliser : " << endl;
+            cout << "Choisissez l'item que vous souhaitez utiliser : " << endl;
             cout << endl;
-            for (const auto& [name, item] : this->items) {
-                cout << name << ". " << item.name << " (" << item.type << ") - " << item.quantity << " unites" << endl;
+            for (int i = 0; i < this->items.size(); i++){
+                cout << i+1 << ". " << this->items[i].name << " (" << this->items[i].type << " " << this->items[i].value << " HP) - " << this->items[i].quantity << " unités" << endl;
             }
+        }
+
+                bool use_item(int choice){
+            if (this->current_hp >= this->max_hp){
+                cout << "Vous ne pouvez pas consommer cette potion : vous avez deja " << this->current_hp << " HP" << endl;
+                cout << endl;
+                return false;
+            }
+            else if (this->items[choice-1].quantity <= 0){
+                cout << "Vous n'avez plus de " << this->items[choice-1].name << " en votre possession !" << endl;
+                cout << endl;
+                return false;
+            }
+            this->items[choice-1].quantity--;
+            this->current_hp += this->items[choice-1].value;
+            cap_hp();
+            cout << "Utilisation de " << this->items[choice-1].name << "..." << endl;
+            cout << "HP : " << this->current_hp << "/" << this->max_hp << endl;
+            cout << endl;
+            return true;
         }
 
         string get_name(){
@@ -101,19 +122,8 @@ class Player{
             }
         }
 
-        void use_item(string choice){
-            if (this->current_hp < this->max_hp){
-                this->items[choice].quantity--;
-                this->current_hp += this->items[choice].value;
-                cout << "Utilisation de " << this->items[choice].name << "..." << endl;
-                cout << "HP : " << this->current_hp << "/" << this->max_hp << endl;
-                cout << endl;
-            }
-            else{
-                cout << "Vous ne pouvez pas consommer cette potion : vous avez deja " << this->current_hp << " HP" << endl;
-                cout << endl;
-            }
-            cap_hp();
+        void set_items(vector<Item> items){
+            this->items = items;
         }
 
 };

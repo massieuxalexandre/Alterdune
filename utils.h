@@ -16,14 +16,14 @@ void main_menu(Player& player){
     cout << endl;
     player.stats();
     cout << "Items disponibles :" << endl;
-    for (auto& [nom, item] : player.get_items()) {
-        cout << item.name << " (" << item.type << ") - " << item.quantity << " unites" << endl;
+    for (int i = 0; i < player.get_items().size(); i++){
+        cout << i+1 << ". " << player.get_items()[i].name << " (" << player.get_items()[i].type << " " << player.get_items()[i].value << " HP) - " << player.get_items()[i].quantity << " unités" << endl;
     }
     cout << endl;
     cout << "Menu principal :" << endl;
     cout << endl;
     cout << "1. Bestiaire" << endl;
-    cout << "2. Demarrer un combat" << endl;
+    cout << "2. Démarrer un combat" << endl;
     cout << "3. Statistiques du joueur" << endl;
     cout << "4. Items" << endl;
     cout << "5. Quitter" << endl;
@@ -35,15 +35,16 @@ void match_menu(string monster_name){
     cout << "A votre tour de jouer. Choisissez ce que vous voulez faire : " << endl;
     cout << endl;
     cout << "1. Combattre" << endl;
-    cout << "2. Action" << endl;
-    cout << "3. Soin" << endl;
+    cout << "2. Actions" << endl;
+    cout << "3. Items" << endl;
     cout << "4. Epargner le monstre" << endl;
     cout << endl;
 }
 
 
 void clear(){
-    for (int i = 0; i < 100; i++) {
+    // cout << "\033[2J\033[H" << flush;
+    for (int i = 0; i < 100; i++){
         cout << endl;
     }
 }
@@ -64,31 +65,23 @@ vector<vector<string>> load_csv(string file){
     return data;
 }
 
-void bestiaire(){
-    vector<vector<string>> history_data = load_csv("data/history.csv");
+void bestiaire(vector<vector<string>> history_data){
+    if (history_data.size() == 0){
+        cout << "Vous n'avez encore vaincu aucun monstre." << endl;
+        cout << endl;
+        return;
+    }
+
     cout << "Tous les monstres vaincus :" << endl;
-    for (auto& row : history_data) {
-        cout << row[1] << " (" << row[0] << ")" << " - Type de mort : " << row[6] << endl;
+    for (int i = 0; i < history_data.size(); i++){
+        cout << history_data[i][0] << " (" << history_data[i][1] << ") - " << history_data[i][2] << endl;
     }
     cout << endl;
 }
 
-void write_csv(string file, vector<vector<string>> data){
-    ofstream outfile(file);
-    for (int i = 0; i < data.size(); i++) {
-        for (int j = 0; j < data[i].size(); j++) {
-            outfile << data[i][j];
-            if (j != data[i].size() - 1) {
-                outfile << ";";
-            }
-        }
-        outfile << endl;
-    }
-}
-
-map<string, Monster*> load_monsters(string file, map<string, Action> actions){
+vector<Monster*> load_monsters(string file, map<string, Action> actions){
     vector<vector<string>> monsters_data = load_csv(file);
-    map<string, Monster*> monsters_map;
+    vector<Monster*> monsters_vector;
     for (int i = 0; i < monsters_data.size(); i++) {
         string type = monsters_data[i][0];
         string name = monsters_data[i][1];
@@ -101,29 +94,29 @@ map<string, Monster*> load_monsters(string file, map<string, Action> actions){
         Action act3 = actions[monsters_data[i][8]];
         Action act4 = actions[monsters_data[i][9]];
         if (type == "NORMAL"){
-            monsters_map[name] = new Monster(name, hp, attack, defense, mercy_goal, act1, act2);
+            monsters_vector.push_back(new Monster(name, hp, attack, defense, mercy_goal, act1, act2));
         }
         else if (type == "MINIBOSS"){
-            monsters_map[name] = new Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3);
+            monsters_vector.push_back(new Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3));
         }
         else if (type == "BOSS"){
-            monsters_map[name] = new Boss(name, hp, attack, defense, mercy_goal, act1, act2, act3, act4);
+            monsters_vector.push_back(new Boss(name, hp, attack, defense, mercy_goal, act1, act2, act3, act4));
         }
     }
-    return monsters_map;
+    return monsters_vector;
 }
 
-map<string, Item> load_items(string file){
+vector<Item> load_items(string file){
     vector<vector<string>> items_data = load_csv(file);
-    map<string, Item> items_map;
+    vector<Item> items_vector;
     for (int i = 0; i < items_data.size(); i++) {
         string name = items_data[i][0];
         string type = items_data[i][1];
         int value = stoi(items_data[i][2]);
         int quantity = stoi(items_data[i][3]);
-        items_map[name] = Item(name, type, value, quantity);
+        items_vector.push_back(Item(name, type, value, quantity));
     }
-    return items_map;
+    return items_vector;
 }
 
 map<string, Action> load_actions(vector<vector<string>> actions_data){
@@ -145,7 +138,7 @@ void next_tour(){
     clear();
 }
 
-int random_damages(int max) {
+int random_int(int max) {
     int min = 0;
     static random_device rd;
     static mt19937 gen(rd());
@@ -154,30 +147,48 @@ int random_damages(int max) {
     return distrib(gen);
 }
 
+
 void fight(Player& player, Monster* monster, int damages, string tour){
     if (tour == "player"){
         monster->set_current_hp(monster->get_current_hp() - damages);
         cout << "Attaque de " << player.get_name() << " envers " << monster->get_name() << endl;
-        cout << "Degats emis : " << damages << endl;
+        cout << "Dégats émis : " << damages << endl;
         if (monster->is_alive()){
             cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
         }
         else {
-            cout << "Vous avez tue " << monster->get_name() << " !" << endl;
+            monster->cap_hp();
+            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
+            player.set_kills(player.get_kills() + 1);
         }
     }
     else if (tour == "monster"){
         player.set_current_hp(player.get_current_hp() - damages);
-        cout << monster->get_name() << " vous a attaque !!" << endl;
-        cout << "Degats encaisses : " << damages << endl;
+        cout << monster->get_name() << " vous attaque !" << endl;
+        cout << "Dégats encaissés : " << damages << endl;
         if (player.is_alive()){
             cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
         }
-        else{
-            cout << "Vous avez ete tue..." << endl;
+        else {
+            player.cap_hp();
+            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
         }
     }
     cout << endl;
+}
+
+bool in_array(string value, int start, int end){
+    vector<string> arr;
+    for (int i = start; i <= end; i++){
+        arr.push_back(to_string(i));
+    }
+    cout << endl;
+    for (int i = 0; i < arr.size(); i++){
+        if (arr[i] == value){
+            return true;
+        }
+    }
+    return false;
 }
 
 
