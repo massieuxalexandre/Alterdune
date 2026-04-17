@@ -41,9 +41,21 @@ void match_menu(string monster_name){
     cout << endl;
 }
 
+void bestiaire(vector<vector<string>> history_data){
+    if (history_data.size() == 0){
+        cout << "Vous n'avez encore vaincu aucun monstre." << endl;
+        cout << endl;
+        return;
+    }
+
+    cout << "Tous les monstres vaincus :" << endl;
+    for (int i = 0; i < history_data.size(); i++){
+        cout << history_data[i][0] << " (" << history_data[i][1] << ") - " << history_data[i][2] << endl;
+    }
+    cout << endl;
+}
 
 void clear(){
-    // cout << "\033[2J\033[H" << flush;
     for (int i = 0; i < 100; i++){
         cout << endl;
     }
@@ -65,19 +77,6 @@ vector<vector<string>> load_csv(string file){
     return data;
 }
 
-void bestiaire(vector<vector<string>> history_data){
-    if (history_data.size() == 0){
-        cout << "Vous n'avez encore vaincu aucun monstre." << endl;
-        cout << endl;
-        return;
-    }
-
-    cout << "Tous les monstres vaincus :" << endl;
-    for (int i = 0; i < history_data.size(); i++){
-        cout << history_data[i][0] << " (" << history_data[i][1] << ") - " << history_data[i][2] << endl;
-    }
-    cout << endl;
-}
 
 vector<Monster*> load_monsters(string file, map<string, Action> actions){
     vector<vector<string>> monsters_data = load_csv(file);
@@ -148,43 +147,14 @@ int random_int(int max) {
 }
 
 
-void fight(Player& player, Monster* monster, int damages, string tour){
-    if (tour == "player"){
-        monster->set_current_hp(monster->get_current_hp() - damages);
-        cout << "Attaque de " << player.get_name() << " envers " << monster->get_name() << endl;
-        cout << "Dégats émis : " << damages << endl;
-        if (monster->is_alive()){
-            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
-        }
-        else {
-            monster->cap_hp();
-            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
-            player.set_kills(player.get_kills() + 1);
-        }
-    }
-    else if (tour == "monster"){
-        player.set_current_hp(player.get_current_hp() - damages);
-        cout << monster->get_name() << " vous attaque !" << endl;
-        cout << "Dégats encaissés : " << damages << endl;
-        if (player.is_alive()){
-            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
-        }
-        else {
-            player.cap_hp();
-            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
-        }
-    }
-    cout << endl;
-}
-
-bool in_array(string value, int start, int end){
+bool valid_choice(string choice, int start, int end){
     vector<string> arr;
     for (int i = start; i <= end; i++){
         arr.push_back(to_string(i));
     }
     cout << endl;
     for (int i = 0; i < arr.size(); i++){
-        if (arr[i] == value){
+        if (arr[i] == choice){
             return true;
         }
     }

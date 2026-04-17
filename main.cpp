@@ -9,6 +9,37 @@
 #include <map>
 using namespace std;
 
+void fight(Player& player, Monster* monster, int damages, string tour){
+    if (tour == "player"){
+        monster->set_current_hp(monster->get_current_hp() - damages);
+        cout << "Attaque de " << player.get_name() << " envers " << monster->get_name() << endl;
+        cout << "Dégats émis : " << damages << endl;
+        if (monster->is_alive()){
+            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
+        }
+        else {
+            monster->cap_hp();
+            cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
+            player.set_kills(player.get_kills() + 1);
+        }
+    }
+    else if (tour == "monster"){
+        player.set_current_hp(player.get_current_hp() - damages);
+        cout << monster->get_name() << " vous attaque !" << endl;
+        cout << "Dégats encaissés : " << damages << endl;
+        if (player.is_alive()){
+            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
+        }
+        else {
+            player.cap_hp();
+            cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
+        }
+    }
+    cout << endl;
+}
+
+
+
 int main() {
     vector<vector<string>> actions_data = {
                                             {"COMPLIMENT", "Tu dis a Froggit qu'il a une jolie peau.", "10"},
@@ -49,7 +80,7 @@ int main() {
         getline(cin, choice);
         clear();
 
-        if (!in_array(choice, 1, 5)){
+        if (!valid_choice(choice, 1, 5)){
             cout << "Choix invalide, veuillez réessayer." << endl;
             cout << endl;
             continue;
@@ -78,7 +109,7 @@ int main() {
                     string match_choice;
                     getline(cin, match_choice);
                     clear();
-                    if (!in_array(match_choice, 1, 4)){
+                    if (!valid_choice(match_choice, 1, 4)){
                         cout << "Choix invalide, veuillez réessayer." << endl;
                         cout << endl;
                         i--;
@@ -93,7 +124,7 @@ int main() {
                         string act_choice;
                         getline(cin, act_choice);
                         clear();
-                        if (!in_array(act_choice, 1, monster->get_acts().size())){
+                        if (!valid_choice(act_choice, 1, monster->get_acts().size())){
                             cout << "Choix invalide, veuillez réessayer." << endl;
                             cout << endl;
                             i--;
@@ -106,7 +137,7 @@ int main() {
                         string item_choice;
                         getline(cin, item_choice);
                         clear();
-                        if (!in_array(item_choice, 1, player.get_items().size())){
+                        if (!valid_choice(item_choice, 1, player.get_items().size())){
                             cout << "Choix invalide, veuillez réessayer." << endl;
                             cout << endl;
                             i--;
@@ -163,7 +194,7 @@ int main() {
             string item_choice;
             getline(cin, item_choice);
             clear();
-            if (!in_array(item_choice, 1, player.get_items().size())){
+            if (!valid_choice(item_choice, 1, player.get_items().size())){
                 cout << "Choix invalide, veuillez réessayer." << endl;
                 cout << endl;
                 continue;
