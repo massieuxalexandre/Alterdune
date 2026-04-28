@@ -7,8 +7,13 @@ using namespace std;
 
 class Action{
 public:
+    // nom de l'action
     string id;
+
+    // ce que l'action affiche
     string text;
+
+    // quantité d'impact sur la jauge "Mercy" d'un monstre
     int impact;
 
     Action(){};

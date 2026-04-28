@@ -34,13 +34,16 @@ class Monster{
             this->acts.push_back(act1);
             this->acts.push_back(act2);
         }
+        // classe virtuelle, chaque classe fille aura sa catégorie de monstre
         virtual ~Monster() {}
         virtual string get_category() = 0;
 
+        // monstre en vie ou non
         bool is_alive(){
             return this->current_hp > 0;
         }
 
+        // afficher les actions qu'un joueur peut faire à ce monstre
         void print_acts(){
             cout << "Choisissez l'action que vous souhaitez utiliser : " << endl;
             cout << endl;
@@ -49,6 +52,7 @@ class Monster{
             }
         }
 
+        // borner le "mercy" compris entre 0 et mercy_goal
         void cap_mercy(){
             if (this->current_mercy > this->mercy_goal){
                 this->current_mercy = this->mercy_goal;
@@ -58,22 +62,7 @@ class Monster{
             }
         }
 
-        void act(int choice){
-            cout << this->acts[choice-1].text << endl;
-            this->current_mercy += this->acts[choice-1].impact;
-            cap_mercy();
-            cout << "Pitie du monstre : " << this->current_mercy << "/" << this->mercy_goal << endl;
-            cout << endl;
-        }
-
-        bool spare(){
-            if (this->current_mercy < this->mercy_goal){
-                return false;
-            }
-            this->current_hp = 0;
-            return true;
-        }
-
+        // borner les HP compris entre 0 et max_hp
         void cap_hp(){
             if (this->current_hp > this->max_hp){
                 this->current_hp = this->max_hp;
@@ -83,6 +72,34 @@ class Monster{
             }
         }
 
+        // utiliser l'action chosie par le joueur
+        // change donc la jauge current_mercy selon l'impact de l'action et affiche le texte de l'action
+        void act(int choice){
+            cout << this->acts[choice-1].text << endl;
+            this->current_mercy += this->acts[choice-1].impact;
+
+            // on borne bien la jauge de mercy
+            cap_mercy();
+
+            // et on affiche cette jauge
+            cout << "Pitie du monstre : " << this->current_mercy << "/" << this->mercy_goal << endl;
+            cout << endl;
+        }
+
+
+        // se faire épargner par un joueur
+        bool spare(){
+            // si le monstre n'a pas attenint son "mercy goal", on ne peut pas l'épargner
+            if (this->current_mercy < this->mercy_goal){
+                return false;
+            }
+
+            // sinon, on lui met 0 HP. Cela permet de finir la boucle principale dans le main
+            this->current_hp = 0;
+            return true;
+        }
+
+        // getters et setters
         string get_name(){
             return this->name;
         }
@@ -109,10 +126,13 @@ class Monster{
 
         void set_current_mercy(int mercy){
             this->current_mercy = mercy;
+            // on borne bien la jauge mercy
+            cap_mercy();
         }
 
         void set_current_hp(int hp){
             this->current_hp = hp;
+            // on borne bien les hp
             cap_hp();
         }
 
@@ -120,6 +140,7 @@ class Monster{
 
 class NormalMonster : public Monster{
     public:
+        // un monstre normal a 2 actions que le joueur peut lui faire
         NormalMonster(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2) : Monster(name, hp, attack, defense, mercy_goal, act1, act2) {
             this->category = "NORMAL";
         }
@@ -131,6 +152,7 @@ class NormalMonster : public Monster{
 
 class Miniboss : public Monster{
     public:
+        // un miniboss a 3 actions que le joueur peut lui faire
         Miniboss(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2, Action act3) : Monster(name, hp, attack, defense, mercy_goal, act1, act2){
             this->category = "MINIBOSS";
             this->acts.push_back(act3);
@@ -143,6 +165,7 @@ class Miniboss : public Monster{
 
 class Boss : public Miniboss{
     public:
+        // un boss a 4 actions que le joueur peut lui faire
         Boss(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2, Action act3, Action act4) : Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3){
             this->category = "BOSS";
             this->acts.push_back(act4);

@@ -8,7 +8,11 @@ class Item{
     public:
         string name;
         string type;
+
+        // nombre de HP que va récupérer un joueur en utilisant cet item
         int value;
+
+        // quantité disponible
         int quantity;
 
         Item(){};

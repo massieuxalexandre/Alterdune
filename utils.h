@@ -11,6 +11,7 @@
 #include <random>
 using namespace std;
 
+// affichage du menu principal
 void main_menu(Player& player){
     cout << "Bonjour " << player.get_name() << " ! " << endl;
     cout << endl;
@@ -31,6 +32,7 @@ void main_menu(Player& player){
 }
 
 
+// affichage du menu de combat
 void match_menu(string monster_name){
     cout << "A votre tour de jouer. Choisissez ce que vous voulez faire : " << endl;
     cout << endl;
@@ -41,6 +43,8 @@ void match_menu(string monster_name){
     cout << endl;
 }
 
+
+// affichage du bestiaire
 void bestiaire(vector<vector<string>> history_data){
     if (history_data.size() == 0){
         cout << "Vous n'avez encore vaincu aucun monstre." << endl;
@@ -49,18 +53,23 @@ void bestiaire(vector<vector<string>> history_data){
     }
 
     cout << "Tous les monstres vaincus :" << endl;
+    cout << endl;
     for (int i = 0; i < history_data.size(); i++){
         cout << history_data[i][0] << " (" << history_data[i][1] << ") - " << history_data[i][2] << endl;
     }
     cout << endl;
 }
 
+
+// clear le terminal pour une meilleure lisibilité
 void clear(){
     for (int i = 0; i < 100; i++){
         cout << endl;
     }
 }
 
+
+// parser un .csv grâce aux librairies <fstream> et <sstream>
 vector<vector<string>> load_csv(string file){
     vector<vector<string>> data;
     ifstream infile(file);
@@ -78,9 +87,13 @@ vector<vector<string>> load_csv(string file){
 }
 
 
+// charger les monstres depuis le .csv et créer leurs objets
 vector<Monster*> load_monsters(string file, map<string, Action> actions){
     vector<vector<string>> monsters_data = load_csv(file);
+
+    // tableau de pointeurs qui contiendra tous les objets monstres
     vector<Monster*> monsters_vector;
+
     for (int i = 0; i < monsters_data.size(); i++) {
         string type = monsters_data[i][0];
         string name = monsters_data[i][1];
@@ -107,8 +120,12 @@ vector<Monster*> load_monsters(string file, map<string, Action> actions){
     return monsters_vector;
 }
 
+
+// charger les items depuis le .csv et créer leur objets
 vector<Item> load_items(string file){
     vector<vector<string>> items_data = load_csv(file);
+
+    // tableau qui contiendra tous les items
     vector<Item> items_vector;
     for (int i = 0; i < items_data.size(); i++) {
         string name = items_data[i][0];
@@ -120,7 +137,10 @@ vector<Item> load_items(string file){
     return items_vector;
 }
 
+
+// charger les actions depuis la liste créée dans le main
 map<string, Action> load_actions(vector<vector<string>> actions_data){
+    // map qui contiendra toutes les actions (key = nom, value = objet)
     map<string, Action> actions_map;
     for (int i = 0; i < actions_data.size(); i++){
         string id = actions_data[i][0];
@@ -131,7 +151,7 @@ map<string, Action> load_actions(vector<vector<string>> actions_data){
     return actions_map;
 }
 
-
+// l'utilisateur appuie sur entrée pour avancer (cela permet de laisser afficher les infos d'une durée que l'utilisateur choisit)
 void next_tour(){
     cout << "Appuyez sur 'ENTREE' pour continuer" << endl;
     string back;
@@ -139,6 +159,8 @@ void next_tour(){
     clear();
 }
 
+// fonction random qui retourne un entier entre 0 et max (donné en paramètre)
+// grace à la librairie <random>
 int random_int(int max) {
     int min = 0;
     static random_device rd;
@@ -149,17 +171,26 @@ int random_int(int max) {
 }
 
 
+// retourne si le choix est bien valide
+// string choice = le choix entré par l'utilisateur (string car plus facile à gérer grâce a getline())
+// int start et int end => bornes des choix valides
 bool valid_choice(string choice, int start, int end){
+    // on créé un tableau comprenant toutes les valeurs possibles
+    // converties en string afin de comparer avec le choix
     vector<string> arr;
     for (int i = start; i <= end; i++){
         arr.push_back(to_string(i));
     }
     cout << endl;
+
+    // si le choix fait partie du tableau, alors il est valide
     for (int i = 0; i < arr.size(); i++){
         if (arr[i] == choice){
             return true;
         }
     }
+
+    // sinon choix invalide
     return false;
 }
 
