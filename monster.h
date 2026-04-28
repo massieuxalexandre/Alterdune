@@ -34,6 +34,8 @@ class Monster{
             this->acts.push_back(act1);
             this->acts.push_back(act2);
         }
+        virtual ~Monster() {}
+        virtual string get_category() = 0;
 
         bool is_alive(){
             return this->current_hp > 0;
@@ -68,9 +70,8 @@ class Monster{
             if (this->current_mercy < this->mercy_goal){
                 return false;
             }
-                this->current_hp = 0;
-                return true;
-
+            this->current_hp = 0;
+            return true;
         }
 
         void cap_hp(){
@@ -102,10 +103,6 @@ class Monster{
             return this->current_mercy;
         }
 
-        string get_category(){
-            return this->category;
-        }
-
         vector<Action> get_acts(){
             return this->acts;
         }
@@ -121,6 +118,17 @@ class Monster{
 
 };
 
+class NormalMonster : public Monster{
+    public:
+        NormalMonster(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2) : Monster(name, hp, attack, defense, mercy_goal, act1, act2) {
+            this->category = "NORMAL";
+        }
+
+        string get_category() override {
+            return this->category;
+        }
+};
+
 class Miniboss : public Monster{
     public:
         Miniboss(string name, int hp, int attack, int defense, int mercy_goal, Action act1, Action act2, Action act3) : Monster(name, hp, attack, defense, mercy_goal, act1, act2){
@@ -128,7 +136,7 @@ class Miniboss : public Monster{
             this->acts.push_back(act3);
         }
 
-        string get_category(){
+        string get_category() override{
             return this->category;
         }
 };
@@ -140,7 +148,7 @@ class Boss : public Miniboss{
             this->acts.push_back(act4);
         }
 
-        string get_category(){
+        string get_category() override{
             return this->category;
         }
 };

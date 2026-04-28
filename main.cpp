@@ -13,7 +13,7 @@ void fight(Player& player, Monster* monster, int damages, string tour){
     if (tour == "player"){
         monster->set_current_hp(monster->get_current_hp() - damages);
         cout << "Attaque de " << player.get_name() << " envers " << monster->get_name() << endl;
-        cout << "Dégats émis : " << damages << endl;
+        cout << "Degats emis : " << damages << endl;
         if (monster->is_alive()){
             cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
         }
@@ -26,7 +26,7 @@ void fight(Player& player, Monster* monster, int damages, string tour){
     else if (tour == "monster"){
         player.set_current_hp(player.get_current_hp() - damages);
         cout << monster->get_name() << " vous attaque !" << endl;
-        cout << "Dégats encaissés : " << damages << endl;
+        cout << "Degats encaisses : " << damages << endl;
         if (player.is_alive()){
             cout << "Vos HP : " << player.get_current_hp() << "/" << player.get_max_hp() << endl;
         }
@@ -67,7 +67,6 @@ int main() {
     cout << "Entrez votre nom : ";
     string player_name;
     getline(cin, player_name);
-    // string player_name = "alex";
     Player player(player_name, items);
     clear();
     
@@ -81,7 +80,7 @@ int main() {
         clear();
 
         if (!valid_choice(choice, 1, 5)){
-            cout << "Choix invalide, veuillez réessayer." << endl;
+            cout << "Choix invalide, veuillez reessayer." << endl;
             cout << endl;
             continue;
         }
@@ -98,25 +97,24 @@ int main() {
             monster->set_current_hp(monster->get_max_hp());
             monster->set_current_mercy(monster->get_mercy_goal()/2);
             cout << "C'est parti " << player.get_name() << " ! Vous allez jouer contre le monstre " << monster->get_name() << endl;
-            string tour;
+            int tour = 0;
             int damages;
 
-            for (int i = 0; player.is_alive() && monster->is_alive(); i++){
-                if (i % 2 == 0){
-                    tour = "player";
+            
+            while(player.is_alive() && monster->is_alive()){
+                if (tour % 2 == 0){
                     match_menu(monster->get_name());
                     damages = random_int(monster->get_max_hp());
                     string match_choice;
                     getline(cin, match_choice);
                     clear();
                     if (!valid_choice(match_choice, 1, 4)){
-                        cout << "Choix invalide, veuillez réessayer." << endl;
+                        cout << "Choix invalide, veuillez reessayer." << endl;
                         cout << endl;
-                        i--;
                         continue;
                     }
                     else if (match_choice == "1"){
-                        fight(player, monster, damages, tour);
+                        fight(player, monster, damages, "player");
                     }
                     else if (match_choice == "2"){
                         monster->print_acts();
@@ -125,9 +123,8 @@ int main() {
                         getline(cin, act_choice);
                         clear();
                         if (!valid_choice(act_choice, 1, monster->get_acts().size())){
-                            cout << "Choix invalide, veuillez réessayer." << endl;
+                            cout << "Choix invalide, veuillez reessayer." << endl;
                             cout << endl;
-                            i--;
                             continue;
                         }
                         monster->act(stoi(act_choice));
@@ -138,45 +135,45 @@ int main() {
                         getline(cin, item_choice);
                         clear();
                         if (!valid_choice(item_choice, 1, player.get_items().size())){
-                            cout << "Choix invalide, veuillez réessayer." << endl;
+                            cout << "Choix invalide, veuillez reessayer." << endl;
                             cout << endl;
-                            i--;
                             continue;
                         }
                         else if(!player.use_item(stoi(item_choice))){
-                            i--;
+
                         }
                     }
                     else if (match_choice == "4"){
                         if (!monster->spare()){
-                            i--;
+
                             cout << "Vous ne pouvez pas epargner ce monstre pour le moment : sa jauge de pitie est a " << monster->get_current_mercy() << "/" << monster->get_mercy_goal() << endl;
                         }
                         else{
                             player.set_spared(player.get_spared() + 1);
-                            cout << "Vous avez epargné " << monster->get_name() << " !" << endl;
+                            cout << "Vous avez epargne " << monster->get_name() << " !" << endl;
+                            history.push_back({monster->get_name(), monster->get_category(), "Epargne"});
                         }
                         cout << endl;
                     }
                 }
                 else{
-                    tour = "monster";
                     damages = random_int(player.get_max_hp());
-                    fight(player, monster, damages, tour);
+                    fight(player, monster, damages, "monster");
                 }
                 next_tour();
                 clear();
+                tour++;
             }
 
             if (!player.is_alive()){
-                cout << "Partie perdue ! Vous avez été eliminé par " << monster->get_name() << endl;
+                cout << "Partie perdue ! Vous avez ete elimine par " << monster->get_name() << endl;
                 cout << endl;
 
             }
             else if (!monster->is_alive()){
-                cout << "Vous avez tué " << monster->get_name() << ". Partie gagnée !" << endl;
+                cout << "Vous avez tue " << monster->get_name() << ". Partie gagnee !" << endl;
                 player.set_wins(player.get_wins() + 1);
-                history.push_back({monster->get_name(), monster->get_category()});
+                history.push_back({monster->get_name(), monster->get_category(), "Tue"});
                 cout << endl;
             }
             next_tour();
@@ -195,7 +192,7 @@ int main() {
             getline(cin, item_choice);
             clear();
             if (!valid_choice(item_choice, 1, player.get_items().size())){
-                cout << "Choix invalide, veuillez réessayer." << endl;
+                cout << "Choix invalide, veuillez reessayer." << endl;
                 cout << endl;
                 continue;
             }
@@ -207,29 +204,30 @@ int main() {
 
 
         else if (choice == "5"){
-            cout << "Merci d'avoir joué, au revoir !" << endl;
+            cout << "Merci d'avoir joue, au revoir !" << endl;
             cout << endl;
-            return 1;
+            break;
         }
 
 
         if (player.get_wins() == 10){
             if (player.get_spared() == 0){
-                cout << "Fin génocidaire ! Vous avez tué tous les monstres vaincus" << endl;
+                cout << "Fin genocidaire ! Vous avez tue tous les monstres vaincus" << endl;
             }
             else if (player.get_kills() == 0){
-                cout << "Fin pacifiste ! Vous avez épargné tous les monstres vaincus" << endl;
+                cout << "Fin pacifiste ! Vous avez epargne tous les monstres vaincus" << endl;
             }
             else{
-                cout << "Fin neutre ! Vous avez à la fois tué et épargné les monstres" << endl;
+                cout << "Fin neutre ! Vous avez a la fois tue et epargne les monstres" << endl;
             }
             cout << endl;
-            return 1;
+            break;
         }
 
-        // next_tour();
     }
 
-    
+    for(Monster* m: monsters){
+        delete m;
+    }
     return 0;
 }

@@ -17,13 +17,13 @@ void main_menu(Player& player){
     player.stats();
     cout << "Items disponibles :" << endl;
     for (int i = 0; i < player.get_items().size(); i++){
-        cout << i+1 << ". " << player.get_items()[i].name << " (" << player.get_items()[i].type << " " << player.get_items()[i].value << " HP) - " << player.get_items()[i].quantity << " unités" << endl;
+        cout << i+1 << ". " << player.get_items()[i].name << " (" << player.get_items()[i].type << " " << player.get_items()[i].value << " HP) - " << player.get_items()[i].quantity << " unites" << endl;
     }
     cout << endl;
     cout << "Menu principal :" << endl;
     cout << endl;
     cout << "1. Bestiaire" << endl;
-    cout << "2. Démarrer un combat" << endl;
+    cout << "2. Demarrer un combat" << endl;
     cout << "3. Statistiques du joueur" << endl;
     cout << "4. Items" << endl;
     cout << "5. Quitter" << endl;
@@ -85,15 +85,17 @@ vector<Monster*> load_monsters(string file, map<string, Action> actions){
         string type = monsters_data[i][0];
         string name = monsters_data[i][1];
         int hp = stoi(monsters_data[i][2]);
-        int attack = stoi(monsters_data[i][3]);
-        int defense = stoi(monsters_data[i][4]);
-        int mercy_goal = stoi(monsters_data[i][5]);
-        Action act1 = actions[monsters_data[i][6]];
-        Action act2 = actions[monsters_data[i][7]];
-        Action act3 = actions[monsters_data[i][8]];
-        Action act4 = actions[monsters_data[i][9]];
+        // int attack = stoi(monsters_data[i][3]);
+        // int defense = stoi(monsters_data[i][4]);
+        int attack = 0;
+        int defense = 0;
+        int mercy_goal = stoi(monsters_data[i][3]);
+        Action act1 = actions[monsters_data[i][4]];
+        Action act2 = actions[monsters_data[i][5]];
+        Action act3 = actions[monsters_data[i][6]];
+        Action act4 = actions[monsters_data[i][7]];
         if (type == "NORMAL"){
-            monsters_vector.push_back(new Monster(name, hp, attack, defense, mercy_goal, act1, act2));
+            monsters_vector.push_back(new NormalMonster(name, hp, attack, defense, mercy_goal, act1, act2));
         }
         else if (type == "MINIBOSS"){
             monsters_vector.push_back(new Miniboss(name, hp, attack, defense, mercy_goal, act1, act2, act3));

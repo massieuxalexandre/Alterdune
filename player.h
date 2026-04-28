@@ -35,7 +35,7 @@ class Player{
             cout << "Nom : " << this->name << endl;
             cout << "HP : " << this->current_hp << "/" << this->max_hp << endl;
             cout << "Kills : " << this->kills << endl;
-            cout << "Monstres épargnés : " << this->spared << endl;
+            cout << "Monstres epargnes : " << this->spared << endl;
             cout << "Victoires : " << this->wins << endl;
             cout << endl;
         }
@@ -48,11 +48,11 @@ class Player{
             cout << "Choisissez l'item que vous souhaitez utiliser : " << endl;
             cout << endl;
             for (int i = 0; i < this->items.size(); i++){
-                cout << i+1 << ". " << this->items[i].name << " (" << this->items[i].type << " " << this->items[i].value << " HP) - " << this->items[i].quantity << " unités" << endl;
+                cout << i+1 << ". " << this->items[i].name << " (" << this->items[i].type << " " << this->items[i].value << " HP) - " << this->items[i].quantity << " unites" << endl;
             }
         }
 
-                bool use_item(int choice){
+        bool use_item(int choice){
             if (this->current_hp >= this->max_hp){
                 cout << "Vous ne pouvez pas consommer cette potion : vous avez deja " << this->current_hp << " HP" << endl;
                 cout << endl;
