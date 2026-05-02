@@ -71,8 +71,15 @@ void clear(){
 
 // parser un .csv grâce aux librairies <fstream> et <sstream>
 vector<vector<string>> load_csv(string file){
-    vector<vector<string>> data;
     ifstream infile(file);
+
+    // gestion de l'erreur d'ouverture du fichier
+    if (!infile.is_open()) {
+        throw runtime_error("Impossible d'ouvrir le fichier " + file);
+    }
+    
+    // si le fichier est bien ouvert, on peut parser le .csv
+    vector<vector<string>> data;
     string line;
     while (getline(infile, line)) {
         vector<string> row;
@@ -83,7 +90,8 @@ vector<vector<string>> load_csv(string file){
         }
         data.push_back(row);
     }
-    return data;
+    
+    return data; 
 }
 
 

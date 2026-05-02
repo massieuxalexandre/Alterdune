@@ -72,8 +72,18 @@ int main() {
 
     // les objets montres et items se trouvent dans des vecteurs. cela permet de les retrouver avec leur indices.
     // c'est utile pour tirer un monstre aléatoirement pour les combats et pour afficher et faire utiliser les items au joueur.
-    vector<Monster*> monsters = load_monsters("data/monsters.csv", actions);
-    vector<Item> items = load_items("data/items.csv");
+    vector<Monster*> monsters;
+    vector<Item> items;
+    try {
+        monsters = load_monsters("data/monsters.csv", actions);
+        items = load_items("data/items.csv");
+    } 
+    // si erreur détectée dans la fonction load_csv(), on l'affiche
+    catch (const exception& e) {
+        cerr << e.what() << endl;
+        cerr << "Veuillez verifier que le dossier data et que les fichiers existent" << endl;
+        return 1; 
+    }
     
     // histrorique des victoires (pour afficher quel monstre a été battu et par quel moyen). historique bien évidemment vide au début.
     vector<vector<string>> history;
