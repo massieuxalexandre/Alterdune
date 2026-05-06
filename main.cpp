@@ -25,6 +25,7 @@ void fight(Player& player, Monster* monster, int damages, string tour){
         else {
             monster->cap_hp();
             cout << "HP de " << monster->get_name() << " : " << monster->get_current_hp() << "/" << monster->get_max_hp() << endl;
+            cout << "Vous avez tue " << monster->get_name() << " !" << endl;
             // on ajoute +1 au nombre de kills du joueur
             player.set_kills(player.get_kills() + 1);
         }
@@ -55,11 +56,11 @@ void fight(Player& player, Monster* monster, int damages, string tour){
 int main() {
     // comme indiqué dans le sujet, nous devons définir les actions du jeu sous forme de vector
     vector<vector<string>> actions_data = {
-                                            {"COMPLIMENT", "Tu dis a Froggit qu'il a une jolie peau.", "10"},
+                                            {"COMPLIMENT", "Tu lui dis qu'il a une jolie peau.", "10"},
                                             {"DISCUSS", "Vous parlez de la pluie et du beau temps.", "20"}, 
-                                            {"OBSERVE", "Tu analyses les mouvements de la boite.", "0"},
-                                            {"PET", "Tu caresses doucement le couvercle.", "40"},
-                                            {"OFFER_SNACK", "Tu jettes un morceau de pain dans la boite.", "60"},
+                                            {"OBSERVE", "Tu analyses ses mouvements.", "0"},
+                                            {"PET", "Tu le caresses doucement.", "40"},
+                                            {"OFFER_SNACK", "Tu lui donne un snack.", "60"},
                                             {"REASON", "Tu tentes de lui expliquer que la violence est inutile.", "10"},
                                             {"DANCE", "Tu lances une battle de danse endiablee !", "30"},
                                             {"JOKE", "Tu racontes une blague sur les processeurs.", "-20"},
@@ -198,7 +199,8 @@ int main() {
                             continue;
                         }
                         else if(!player.use_item(stoi(item_choice))){
-
+                            next_tour();
+                            continue;
                         }
                     }
 
@@ -208,6 +210,8 @@ int main() {
                         // on vérifie d'abord si la jauge de mercy a atteint son "mercy goal" grâce a la méthode spare() (return un boolean)
                         if (!monster->spare()){
                             cout << "Vous ne pouvez pas epargner ce monstre pour le moment : sa jauge de pitie est a " << monster->get_current_mercy() << "/" << monster->get_mercy_goal() << endl;
+                            next_tour();
+                            continue;
                         }
                         else{
                             // on ajoute le nombre de monstre épargné de "+1" au joueur
@@ -240,7 +244,7 @@ int main() {
             // monstre mort : on ajoute 1 win au joueur 
             // et on ajoute à l'historique le monstre battu, sa catégorie et par quel moyen il est éliminé (ici tué)
             else if (!monster->is_alive()){
-                cout << "Vous avez tue " << monster->get_name() << ". Partie gagnee !" << endl;
+                cout << "Partie gagnee ! Vous avez vaincu "<< monster->get_name() << endl;
                 player.set_wins(player.get_wins() + 1);
                 history.push_back({monster->get_name(), monster->get_category(), "Tue"});
                 cout << endl;
